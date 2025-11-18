@@ -185,7 +185,7 @@ export function ChallengesPage() {
       </div>
 
       {/* Challenges List */}
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-4 pb-24 md:pb-0">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

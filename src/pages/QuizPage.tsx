@@ -245,7 +245,7 @@ export function QuizPage({ onNavigateHome, isMultiplayer = false }: QuizPageProp
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-            className="grid grid-cols-3 gap-4 mb-6"
+            className="grid grid-cols-2 gap-4 mb-6"
           >
             {/* Time Left */}
             <div className="bg-[#1a2942]/80 backdrop-blur-sm border border-white/10 rounded-xl p-3">
@@ -267,15 +267,6 @@ export function QuizPage({ onNavigateHome, isMultiplayer = false }: QuizPageProp
                 <span>SCORE</span>
               </div>
               <div className="text-2xl text-blue-400">{score}</div>
-            </div>
-
-            {/* Correct */}
-            <div className="bg-[#1a2942]/80 backdrop-blur-sm border border-white/10 rounded-xl p-3">
-              <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
-                <span>CORRECT</span>
-              </div>
-              <div className="text-2xl text-green-400">{score}</div>
             </div>
           </motion.div>
 

@@ -25,9 +25,13 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
   ];
 
   return (
-    <div className="w-14 bg-[#0f1a2e] flex flex-col items-center py-4 gap-6 border-r border-white/10 relative z-20">
-      {/* Logo */}
-      <div className="w-10 h-10 rounded-full bg-[#1a2942] border-2 border-white/20 flex items-center justify-center mb-2">
+    <div className="
+      md:w-14 md:flex-col md:py-4 md:gap-6 md:border-r md:h-auto md:relative
+      fixed bottom-0 left-0 right-0 h-16 flex-row px-2 gap-1 border-t
+      bg-[#0f1a2e] flex items-center justify-center border-white/10 z-10
+    ">
+      {/* Logo - hidden on mobile */}
+      <div className="hidden md:flex w-10 h-10 rounded-full bg-[#1a2942] border-2 border-white/20 items-center justify-center mb-2">
         <ImageWithFallback 
           src="https://images.unsplash.com/photo-1589998059171-988d887df646?w=40&h=40&fit=crop"
           alt="Logo"
@@ -51,7 +55,7 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
               }}
               onMouseEnter={() => setHoveredIcon('home')}
               onMouseLeave={() => setHoveredIcon(null)}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
+              className={`w-10 h-10 md:w-10 md:h-10 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
                 isActive
                   ? 'bg-green-500/20 text-green-400'
                   : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -590,11 +594,11 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
         );
       })}
 
-      {/* User Profile at bottom */}
-      <div className="mt-auto">
+      {/* User Profile at bottom on desktop, right on mobile */}
+      <div className="md:mt-auto">
         <motion.button 
           onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+          className={`w-10 h-10 md:w-10 md:h-10 rounded-lg flex items-center justify-center transition-colors ${
             isProfileMenuOpen
               ? 'bg-green-500/20 text-green-400'
               : 'text-gray-400 hover:text-white hover:bg-white/5'

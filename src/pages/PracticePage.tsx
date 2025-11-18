@@ -242,18 +242,19 @@ export function PracticePage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 md:gap-4 flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-shrink-0">
+          {/* My Themes - Icon only on mobile */}
           <button
             onClick={() => setIsThemesModalOpen(true)}
-            className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/50 text-teal-400 transition-colors"
+            className="flex items-center justify-center min-w-[40px] h-[40px] sm:w-auto sm:h-auto sm:gap-2 sm:px-4 sm:py-2 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/50 text-teal-400 transition-colors flex-shrink-0"
           >
-            <BookMarked className="w-3.5 h-3.5 md:w-4 md:h-4" />
-            <span className="text-xs md:text-sm hidden xl:inline">My Themes</span>
+            <BookMarked className="w-4 h-4" />
+            <span className="hidden sm:inline text-sm">My Themes</span>
           </button>
 
-          {/* Practice Mode Selector */}
+          {/* Practice Mode Selector - Wider on mobile to fit text */}
           <Select value={practiceMode} onValueChange={(value) => setPracticeMode(value as PracticeMode)}>
-            <SelectTrigger className="w-20 sm:w-24 md:w-28 lg:w-40 bg-[#1a2942] border-white/10 text-white text-xs md:text-sm">
+            <SelectTrigger className="w-[72px] sm:w-28 md:w-32 lg:w-40 h-[40px] bg-[#1a2942] border-white/10 text-white text-xs sm:text-sm flex-shrink-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -263,9 +264,9 @@ export function PracticePage() {
             </SelectContent>
           </Select>
 
-          {/* Theme Selector - Hidden on smallest screens */}
+          {/* Theme Selector - Hidden on mobile */}
           <Select value={selectedTheme} onValueChange={setSelectedTheme}>
-            <SelectTrigger className="hidden sm:flex w-20 md:w-32 lg:w-48 bg-[#1a2942] border-white/10 text-white text-xs md:text-sm">
+            <SelectTrigger className="hidden sm:flex w-28 md:w-36 lg:w-48 h-[40px] bg-[#1a2942] border-white/10 text-white text-xs sm:text-sm flex-shrink-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -276,9 +277,9 @@ export function PracticePage() {
             </SelectContent>
           </Select>
 
-          {/* Language Toggle */}
+          {/* Language Toggle - Hidden on mobile/tablet */}
           <Select value={language} onValueChange={(value) => setLanguage(value as Language)}>
-            <SelectTrigger className="hidden lg:flex w-32 bg-[#1a2942] border-white/10 text-white text-sm">
+            <SelectTrigger className="hidden lg:flex w-36 h-[40px] bg-[#1a2942] border-white/10 text-white text-sm flex-shrink-0">
               <Globe className="w-4 h-4 mr-2" />
               <SelectValue />
             </SelectTrigger>

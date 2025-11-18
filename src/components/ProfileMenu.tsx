@@ -25,7 +25,7 @@ export function ProfileMenu({ isOpen, onNavigate, onClose }: ProfileMenuProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.15 }}
-            className="fixed bottom-20 left-4 z-40 w-80 bg-[#1a2942] border border-white/20 rounded-2xl p-6 shadow-2xl"
+            className="fixed bottom-20 right-4 md:bottom-20 md:left-4 z-40 w-80 bg-[#1a2942] border border-white/20 rounded-2xl p-6 shadow-2xl"
           >
             {/* Username */}
             <div className="text-white mb-6 pb-6 border-b border-white/10">

@@ -15,9 +15,10 @@ import { QuickPlayModal } from '../components/QuickPlayModal';
 interface HomePageProps {
   onNavigateToQuiz: (isMultiplayer?: boolean) => void;
   onLogout?: () => void; // Callback when user logs out
+  onModalStateChange?: (isOpen: boolean) => void; // Callback when QuickPlayModal state changes
 }
 
-export function HomePage({ onNavigateToQuiz, onLogout }: HomePageProps) {
+export function HomePage({ onNavigateToQuiz, onLogout, onModalStateChange }: HomePageProps) {
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [isToolsSidebarOpen, setIsToolsSidebarOpen] = useState(false);
   const [isHelpTutorialOpen, setIsHelpTutorialOpen] = useState(false);
@@ -61,7 +62,10 @@ export function HomePage({ onNavigateToQuiz, onLogout }: HomePageProps) {
       
       <main className="flex-1 px-3 md:px-8 pb-6 md:pb-8">
         <div className="max-w-7xl mx-auto space-y-6 md:space-y-12">
-          <HeroSection onQuickPlay={() => setIsQuickPlayModalOpen(true)} />
+          <HeroSection onQuickPlay={() => {
+            setIsQuickPlayModalOpen(true);
+            onModalStateChange?.(true);
+          }} />
           <DailyVerse />
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
@@ -69,7 +73,10 @@ export function HomePage({ onNavigateToQuiz, onLogout }: HomePageProps) {
             <RecentActivity />
           </div>
           
-          <FeaturedQuestions onQuestionClick={() => setIsQuickPlayModalOpen(true)} />
+          <FeaturedQuestions onQuestionClick={() => {
+            setIsQuickPlayModalOpen(true);
+            onModalStateChange?.(true);
+          }} />
         </div>
       </main>
       
@@ -98,9 +105,13 @@ export function HomePage({ onNavigateToQuiz, onLogout }: HomePageProps) {
       
       <QuickPlayModal 
         isOpen={isQuickPlayModalOpen} 
-        onClose={() => setIsQuickPlayModalOpen(false)}
+        onClose={() => {
+          setIsQuickPlayModalOpen(false);
+          onModalStateChange?.(false);
+        }}
         onStartQuiz={() => {
           setIsQuickPlayModalOpen(false);
+          onModalStateChange?.(false);
           onNavigateToQuiz();
         }}
       />

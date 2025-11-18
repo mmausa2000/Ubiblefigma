@@ -28,8 +28,12 @@ type GameMode = 'solo' | 'multiplayer';
 type MultiplayerView = 'choice' | 'create' | 'join' | 'waiting' | 'playing' | 'results';
 
 export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalProps) {
+  const [showInitialChoice, setShowInitialChoice] = useState(true);
   const [gameMode, setGameMode] = useState<GameMode>('solo');
   const [multiplayerView, setMultiplayerView] = useState<MultiplayerView>('choice');
+  
+  // Hover states for arm wrestling
+  const [hoveredCard, setHoveredCard] = useState<'solo' | 'multiplayer' | null>(null);
   
   // Solo settings
   const [timePerQuestion, setTimePerQuestion] = useState(30);
@@ -227,6 +231,26 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
     setRoomCode('');
   };
 
+  const handleModeSelection = (mode: GameMode) => {
+    setGameMode(mode);
+    setShowInitialChoice(false);
+    if (mode === 'multiplayer') {
+      setMultiplayerView('choice');
+    }
+  };
+
+  const handleBackToInitialChoice = () => {
+    setShowInitialChoice(true);
+    setMultiplayerView('choice');
+  };
+
+  // Reset to initial choice when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setShowInitialChoice(true);
+    }
+  }, [isOpen]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -237,7 +261,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
           />
 
           {/* Modal */}
@@ -245,165 +269,271 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-[#1a2942] border border-white/20 rounded-2xl shadow-2xl z-50 max-h-[90vh] overflow-hidden flex flex-col"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] md:w-full max-w-2xl bg-[#1a2942] border border-white/20 rounded-2xl shadow-2xl z-[101] max-h-[90vh] overflow-hidden flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-white/10 flex-shrink-0">
-              <div className="flex items-center gap-3">
-                {gameMode === 'multiplayer' && multiplayerView !== 'choice' && (
-                  <button
-                    onClick={resetToChoice}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-                  >
-                    <ArrowLeft className="w-5 h-5" />
-                  </button>
-                )}
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center">
-                  <Play className="w-5 h-5 text-white" />
+            <div className="border-b border-white/10 flex-shrink-0">
+              <div className="flex items-center justify-between p-4 md:p-6">
+                <div className="flex items-center gap-3">
+                  {!showInitialChoice && (
+                    <button
+                      onClick={gameMode === 'multiplayer' && multiplayerView !== 'choice' ? resetToChoice : handleBackToInitialChoice}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </button>
+                  )}
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center">
+                    <Play className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-white">Quick Play Quiz</h2>
+                    <p className="text-gray-400 text-sm mt-0.5">
+                      {showInitialChoice 
+                        ? 'Choose your game mode'
+                        : gameMode === 'solo' ? 'Solo Mode' : 'Multiplayer Mode'
+                      }
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-white">Quick Play Quiz</h2>
-                  <p className="text-gray-400 text-sm mt-0.5">
-                    {gameMode === 'solo' ? 'Solo Mode' : 'Multiplayer Mode'}
-                  </p>
-                </div>
+                <button
+                  onClick={onClose}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                onClick={onClose}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+
+              {/* Quiz Settings in Header - Solo Mode Only */}
+              {!showInitialChoice && gameMode === 'solo' && (
+                <div className="px-4 md:px-6 pb-4 border-t border-white/5">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                    {/* Time Per Question */}
+                    <div className="space-y-1.5">
+                      <label className="flex items-center gap-2 text-xs text-gray-400">
+                        <Clock className="w-3.5 h-3.5" />
+                        Time per Question
+                      </label>
+                      <select
+                        value={timePerQuestion}
+                        onChange={(e) => setTimePerQuestion(Number(e.target.value))}
+                        className="w-full px-3 py-2 text-sm rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-teal-500/50"
+                      >
+                        <option value={15}>15 seconds</option>
+                        <option value={30}>30 seconds</option>
+                        <option value={45}>45 seconds</option>
+                        <option value={60}>60 seconds</option>
+                        <option value={90}>90 seconds</option>
+                      </select>
+                    </div>
+
+                    {/* Number of Questions */}
+                    <div className="space-y-1.5">
+                      <label className="flex items-center gap-2 text-xs text-gray-400">
+                        <Hash className="w-3.5 h-3.5" />
+                        Number of Questions
+                      </label>
+                      <select
+                        value={numberOfQuestions}
+                        onChange={(e) => setNumberOfQuestions(Number(e.target.value))}
+                        className="w-full px-3 py-2 text-sm rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-teal-500/50"
+                      >
+                        <option value={5}>5 questions</option>
+                        <option value={10}>10 questions</option>
+                        <option value={15}>15 questions</option>
+                        <option value={20}>20 questions</option>
+                        <option value={25}>25 questions</option>
+                        <option value={50}>50 questions</option>
+                      </select>
+                    </div>
+
+                    {/* Language */}
+                    <div className="space-y-1.5">
+                      <label className="flex items-center gap-2 text-xs text-gray-400">
+                        <Globe className="w-3.5 h-3.5" />
+                        Language
+                      </label>
+                      <select
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value)}
+                        className="w-full px-3 py-2 text-sm rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-teal-500/50"
+                      >
+                        <option value="English">English</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="French">French</option>
+                        <option value="German">German</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Content */}
-            <div className="p-6 space-y-6 overflow-y-auto flex-1">
-              {/* Game Mode Selection */}
-              <div className="space-y-4">
-                <h3 className="text-white flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">1</span>
-                  Game Mode
-                </h3>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Solo Mode */}
-                  <button
-                    onClick={() => {
-                      setGameMode('solo');
-                      setMultiplayerView('choice');
-                    }}
-                    className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all ${
-                      gameMode === 'solo'
-                        ? 'bg-teal-500/20 border-teal-500/50'
-                        : 'bg-white/5 border-white/10 hover:bg-white/10'
-                    }`}
-                  >
-                    <Play className={`w-5 h-5 ${gameMode === 'solo' ? 'text-teal-400' : 'text-gray-400'}`} />
-                    <div className="flex-1 text-left">
-                      <p className={`${gameMode === 'solo' ? 'text-teal-400' : 'text-white'}`}>
-                        Solo Mode
-                      </p>
-                      <p className="text-xs text-gray-400">Play alone</p>
-                    </div>
-                  </button>
-
-                  {/* Multiplayer Mode */}
-                  <button
-                    onClick={() => {
-                      setGameMode('multiplayer');
-                      setMultiplayerView('choice');
-                    }}
-                    className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all ${
-                      gameMode === 'multiplayer'
-                        ? 'bg-orange-500/20 border-orange-500/50'
-                        : 'bg-white/5 border-white/10 hover:bg-white/10'
-                    }`}
-                  >
-                    <Users className={`w-5 h-5 ${gameMode === 'multiplayer' ? 'text-orange-400' : 'text-gray-400'}`} />
-                    <div className="flex-1 text-left">
-                      <p className={`${gameMode === 'multiplayer' ? 'text-orange-400' : 'text-white'}`}>
-                        Multiplayer Mode
-                      </p>
-                      <p className="text-xs text-gray-400">Play with friends</p>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Solo Settings */}
-              {gameMode === 'solo' && (
-                <>
-                  <div className="space-y-4">
-                    <h3 className="text-white flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">2</span>
-                      Quiz Settings
-                    </h3>
-                    
-                    <div className="grid grid-cols-3 gap-4">
-                      {/* Time Per Question */}
-                      <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-sm text-gray-400">
-                          <Clock className="w-4 h-4" />
-                          Time per Question
-                        </label>
-                        <select
-                          value={timePerQuestion}
-                          onChange={(e) => setTimePerQuestion(Number(e.target.value))}
-                          className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-teal-500/50"
-                        >
-                          <option value={15}>15 seconds</option>
-                          <option value={30}>30 seconds</option>
-                          <option value={45}>45 seconds</option>
-                          <option value={60}>60 seconds</option>
-                          <option value={90}>90 seconds</option>
-                        </select>
-                      </div>
-
-                      {/* Number of Questions */}
-                      <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-sm text-gray-400">
-                          <Hash className="w-4 h-4" />
-                          Number of Questions
-                        </label>
-                        <select
-                          value={numberOfQuestions}
-                          onChange={(e) => setNumberOfQuestions(Number(e.target.value))}
-                          className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-teal-500/50"
-                        >
-                          <option value={5}>5 questions</option>
-                          <option value={10}>10 questions</option>
-                          <option value={15}>15 questions</option>
-                          <option value={20}>20 questions</option>
-                          <option value={25}>25 questions</option>
-                          <option value={50}>50 questions</option>
-                        </select>
-                      </div>
-
-                      {/* Language */}
-                      <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-sm text-gray-400">
-                          <Globe className="w-4 h-4" />
-                          Language
-                        </label>
-                        <select
-                          value={language}
-                          onChange={(e) => setLanguage(e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-teal-500/50"
-                        >
-                          <option value="English">English</option>
-                          <option value="Spanish">Spanish</option>
-                          <option value="French">French</option>
-                          <option value="German">German</option>
-                        </select>
-                      </div>
-                    </div>
+            <div className="p-4 md:p-6 space-y-4 md:space-y-6 flex-1 overflow-y-auto">
+              {/* Initial Choice Screen */}
+              {showInitialChoice && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-6"
+                >
+                  <div className="text-center space-y-2">
+                    <h3 className="text-white text-xl">Choose Your Game Mode</h3>
+                    <p className="text-gray-400 text-sm">Select how you want to play</p>
                   </div>
 
+                  {/* Arm Wrestling Animation */}
+                  <div className="relative h-32 flex items-center justify-center">
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center"
+                      animate={{
+                        rotate: hoveredCard === 'solo' ? -15 : hoveredCard === 'multiplayer' ? 15 : [0, -5, 5, 0],
+                      }}
+                      transition={
+                        hoveredCard 
+                          ? { type: 'spring', stiffness: 300, damping: 20 }
+                          : { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+                      }
+                    >
+                      {/* Left Arm (Solo) */}
+                      <motion.div
+                        className="relative"
+                        animate={{
+                          x: hoveredCard === 'solo' ? 10 : hoveredCard === 'multiplayer' ? -10 : 0,
+                        }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      >
+                        <div className="relative">
+                          {/* Forearm */}
+                          <div className="w-24 h-8 rounded-l-full bg-gradient-to-r from-green-500 to-teal-500 shadow-lg relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                            {/* Muscle definition */}
+                            <div className="absolute top-1 left-4 w-12 h-1 bg-white/20 rounded-full" />
+                            <div className="absolute bottom-1 left-4 w-10 h-1 bg-black/20 rounded-full" />
+                          </div>
+                          {/* Hand/Fist */}
+                          <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-teal-600 shadow-xl rotate-45 border-2 border-teal-300/30">
+                            <div className="absolute inset-1 bg-gradient-to-br from-white/20 to-transparent rounded" />
+                          </div>
+                        </div>
+                      </motion.div>
+
+                      {/* Clash Point - Lightning/Energy */}
+                      <motion.div
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                        animate={{
+                          scale: [1, 1.3, 1],
+                          opacity: [0.5, 1, 0.5],
+                        }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                        }}
+                      >
+                        <Zap className="w-8 h-8 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" />
+                      </motion.div>
+
+                      {/* Right Arm (Multiplayer) */}
+                      <motion.div
+                        className="relative"
+                        animate={{
+                          x: hoveredCard === 'multiplayer' ? -10 : hoveredCard === 'solo' ? 10 : 0,
+                        }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      >
+                        <div className="relative">
+                          {/* Forearm */}
+                          <div className="w-24 h-8 rounded-r-full bg-gradient-to-l from-orange-500 to-pink-500 shadow-lg relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                            {/* Muscle definition */}
+                            <div className="absolute top-1 right-4 w-12 h-1 bg-white/20 rounded-full" />
+                            <div className="absolute bottom-1 right-4 w-10 h-1 bg-black/20 rounded-full" />
+                          </div>
+                          {/* Hand/Fist */}
+                          <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg bg-gradient-to-bl from-orange-400 to-pink-600 shadow-xl rotate-45 border-2 border-pink-300/30">
+                            <div className="absolute inset-1 bg-gradient-to-bl from-white/20 to-transparent rounded" />
+                          </div>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+
+                    {/* Dynamic Badge */}
+                    <motion.div
+                      className="absolute left-1/2 -translate-x-1/2 bottom-2 px-4 py-1 rounded-full border border-white/20 shadow-xl"
+                      style={{
+                        background: hoveredCard === 'solo' 
+                          ? 'linear-gradient(to right, #14b8a6, #10b981)' 
+                          : hoveredCard === 'multiplayer'
+                          ? 'linear-gradient(to right, #f97316, #ec4899)'
+                          : 'linear-gradient(to right, #a855f7, #3b82f6)',
+                      }}
+                      animate={{
+                        scale: hoveredCard ? [1, 1.1, 1] : 1,
+                      }}
+                      transition={{
+                        duration: 0.3,
+                        repeat: hoveredCard ? Infinity : 0,
+                      }}
+                    >
+                      <p className="text-white text-xs font-bold">
+                        {hoveredCard === 'solo' ? 'SINGLE' : hoveredCard === 'multiplayer' ? 'MULTI' : 'VS'}
+                      </p>
+                    </motion.div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4">
+                    {/* Single Player */}
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onMouseEnter={() => setHoveredCard('solo')}
+                      onMouseLeave={() => setHoveredCard(null)}
+                      onClick={() => handleModeSelection('solo')}
+                      className="flex items-center gap-4 p-6 rounded-xl border bg-gradient-to-br from-teal-500/10 to-green-500/10 border-teal-500/30 hover:border-teal-500/60 hover:from-teal-500/20 hover:to-green-500/20 transition-all group"
+                    >
+                      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Brain className="w-8 h-8 text-white" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className="text-white text-lg mb-1">Single Player</p>
+                        <p className="text-gray-400 text-sm">Practice and improve your Bible knowledge alone</p>
+                      </div>
+                      <ArrowLeft className="w-5 h-5 text-teal-400 rotate-180 group-hover:translate-x-1 transition-transform" />
+                    </motion.button>
+
+                    {/* Multiplayer */}
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onMouseEnter={() => setHoveredCard('multiplayer')}
+                      onMouseLeave={() => setHoveredCard(null)}
+                      onClick={() => handleModeSelection('multiplayer')}
+                      className="flex items-center gap-4 p-6 rounded-xl border bg-gradient-to-br from-orange-500/10 to-pink-500/10 border-orange-500/30 hover:border-orange-500/60 hover:from-orange-500/20 hover:to-pink-500/20 transition-all group"
+                    >
+                      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Users className="w-8 h-8 text-white" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className="text-white text-lg mb-1">Multiplayer</p>
+                        <p className="text-gray-400 text-sm">Challenge friends and compete together</p>
+                      </div>
+                      <ArrowLeft className="w-5 h-5 text-orange-400 rotate-180 group-hover:translate-x-1 transition-transform" />
+                    </motion.button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Solo Settings */}
+              {!showInitialChoice && gameMode === 'solo' && (
+                <>
                   {/* Theme Selection */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-white flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">3</span>
+                        <BookMarked className="w-5 h-5 text-teal-400" />
                         Select Themes
                       </h3>
                       <p className="text-xs text-teal-400">{totalVerses} verses total</p>
@@ -532,7 +662,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
               )}
 
               {/* Multiplayer: Choice */}
-              {gameMode === 'multiplayer' && multiplayerView === 'choice' && (
+              {!showInitialChoice && gameMode === 'multiplayer' && multiplayerView === 'choice' && (
                 <div className="space-y-4">
                   <h3 className="text-white flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">2</span>
@@ -572,7 +702,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
               )}
 
               {/* Multiplayer: Create Room */}
-              {gameMode === 'multiplayer' && multiplayerView === 'create' && (
+              {!showInitialChoice && gameMode === 'multiplayer' && multiplayerView === 'create' && (
                 <>
                   <div className="space-y-4">
                     <h3 className="text-white flex items-center gap-2">
@@ -699,7 +829,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
               )}
 
               {/* Multiplayer: Join Room */}
-              {gameMode === 'multiplayer' && multiplayerView === 'join' && (
+              {!showInitialChoice && gameMode === 'multiplayer' && multiplayerView === 'join' && (
                 <div className="space-y-4">
                   <h3 className="text-white flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">2</span>
@@ -725,7 +855,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
               )}
 
               {/* Multiplayer: Waiting Room */}
-              {gameMode === 'multiplayer' && multiplayerView === 'waiting' && (
+              {!showInitialChoice && gameMode === 'multiplayer' && multiplayerView === 'waiting' && (
                 <>
                   {/* Room Code Display */}
                   <div className="space-y-4">
@@ -861,7 +991,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
               )}
 
               {/* Multiplayer: Playing */}
-              {gameMode === 'multiplayer' && multiplayerView === 'playing' && (
+              {!showInitialChoice && gameMode === 'multiplayer' && multiplayerView === 'playing' && (
                 <MultiplayerGameplay
                   onGameEnd={() => {
                     setMultiplayerView('results');
@@ -872,7 +1002,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
               )}
 
               {/* Multiplayer: Results */}
-              {gameMode === 'multiplayer' && multiplayerView === 'results' && (
+              {!showInitialChoice && gameMode === 'multiplayer' && multiplayerView === 'results' && (
                 <QuickPlayResults
                   showConfetti={showConfetti}
                   onPlayAgain={() => {
@@ -888,7 +1018,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-white/10 flex items-center justify-between flex-shrink-0">
+            <div className="p-4 md:p-6 border-t border-white/10 flex items-center justify-between flex-shrink-0">
               <button
                 onClick={onClose}
                 className="px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
@@ -896,7 +1026,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
                 Cancel
               </button>
               
-              {gameMode === 'solo' && (
+              {!showInitialChoice && gameMode === 'solo' && (
                 <button
                   onClick={handleStartQuiz}
                   disabled={selectedThemes.length === 0}
@@ -907,7 +1037,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
                 </button>
               )}
 
-              {gameMode === 'multiplayer' && multiplayerView === 'create' && (
+              {!showInitialChoice && gameMode === 'multiplayer' && multiplayerView === 'create' && (
                 <button
                   onClick={handleCreateRoom}
                   disabled={selectedThemes.length === 0 || !roomName}
@@ -918,7 +1048,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
                 </button>
               )}
 
-              {gameMode === 'multiplayer' && multiplayerView === 'join' && (
+              {!showInitialChoice && gameMode === 'multiplayer' && multiplayerView === 'join' && (
                 <button
                   onClick={handleJoinRoom}
                   disabled={roomCode.length !== 6}
@@ -929,7 +1059,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
                 </button>
               )}
 
-              {gameMode === 'multiplayer' && multiplayerView === 'waiting' && (
+              {!showInitialChoice && gameMode === 'multiplayer' && multiplayerView === 'waiting' && (
                 <button
                   onClick={handleStartMultiplayerGame}
                   disabled={connectedPlayers.length < 2}
