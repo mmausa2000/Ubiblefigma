@@ -5,15 +5,15 @@ import { useState, useRef, useEffect } from 'react';
 interface VersionNavDropdownProps {
   isOpen: boolean;
   onClose: () => void;
-  currentLanguage: 'english' | 'swahili';
+  currentLanguage: 'english' | 'swahili' | 'french';
   currentVersion: string;
-  onNavigate: (language: 'english' | 'swahili', version: string) => void;
+  onNavigate: (language: 'english' | 'swahili' | 'french', version: string) => void;
   anchorRef?: React.RefObject<HTMLElement>;
 }
 
 interface LanguageVersions {
   name: string;
-  key: 'english' | 'swahili';
+  key: 'english' | 'swahili' | 'french';
   versions: { code: string; name: string }[];
 }
 
@@ -28,6 +28,11 @@ const languageVersions: LanguageVersions[] = [
     key: 'swahili',
     versions: [{ code: 'SUV', name: 'Swahili Union Version' }],
   },
+  {
+    name: 'Français',
+    key: 'french',
+    versions: [{ code: 'LSG', name: 'Louis Segond' }],
+  },
 ];
 
 export function VersionNavDropdown({
@@ -38,7 +43,7 @@ export function VersionNavDropdown({
   onNavigate,
   anchorRef,
 }: VersionNavDropdownProps) {
-  const [selectedLanguage, setSelectedLanguage] = useState<'english' | 'swahili'>(currentLanguage);
+  const [selectedLanguage, setSelectedLanguage] = useState<'english' | 'swahili' | 'french'>(currentLanguage);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Update selected language when current language changes
@@ -73,7 +78,7 @@ export function VersionNavDropdown({
     onClose();
   };
 
-  const handleLanguageSelect = (lang: 'english' | 'swahili') => {
+  const handleLanguageSelect = (lang: 'english' | 'swahili' | 'french') => {
     setSelectedLanguage(lang);
   };
 

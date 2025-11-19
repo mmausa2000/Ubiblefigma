@@ -25,8 +25,8 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
   return (
     <div className="
-      md:w-14 md:flex-col md:py-4 md:gap-6 md:border-r md:h-auto md:relative
       fixed bottom-0 left-0 right-0 h-16 flex-row px-2 gap-1 border-t
+      md:fixed md:left-0 md:top-0 md:bottom-0 md:w-16 md:flex-col md:py-4 md:gap-6 md:border-r md:border-t-0 md:h-auto
       bg-[#0f1a2e] flex items-center justify-center border-white/10 z-10
     ">
       {/* Logo - hidden on mobile */}
