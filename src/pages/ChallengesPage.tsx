@@ -47,48 +47,100 @@ export function ChallengesPage() {
   return (
     <div className="flex-1 p-3 md:p-8 min-h-full">
       {/* Header */}
-      <header className="flex items-center justify-between px-3 md:px-8 py-3 md:py-4 border-b border-white/10 -mx-3 md:-mx-8 -mt-3 md:-mt-8 mb-6 md:mb-8 gap-2 md:gap-4">
-        <div className="flex items-center gap-2 md:gap-4 min-w-0">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 md:w-8 md:h-8 bg-white/10 rounded flex items-center justify-center flex-shrink-0">
-              <Trophy className="w-3.5 h-3.5 md:w-4 md:h-4 text-orange-400" />
+      <header className="border-b border-white/10 -mx-3 md:-mx-8 -mt-3 md:-mt-8 mb-6 md:mb-8">
+        {/* Mobile: Two-row layout */}
+        <div className="md:hidden">
+          {/* Top Row - Title & Description */}
+          <div className="flex items-center justify-between px-3 sm:px-6 py-3 bg-gradient-to-r from-orange-500/10 to-amber-500/10">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500/20 to-amber-500/20 rounded-xl flex items-center justify-center border border-orange-500/30">
+                <Trophy className="w-5 h-5 text-orange-400" />
+              </div>
+              <div>
+                <h1 className="text-white font-semibold">Challenges</h1>
+                <p className="text-gray-400 text-sm">
+                  Test your scripture knowledge
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <h1 className="text-white text-lg md:text-2xl truncate">Challenges</h1>
-              <p className="text-gray-400 text-xs md:text-sm hidden sm:block">Test your scripture knowledge</p>
+          </div>
+
+          {/* Bottom Row - Stats */}
+          <div className="px-3 sm:px-6 py-2.5 bg-gradient-to-r from-orange-500/5 to-amber-500/5 flex items-center gap-2">
+            {/* Completed Stat */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/20">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+                  <Trophy className="w-4 h-4 text-orange-400" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-white font-medium text-sm">0</div>
+                  <div className="text-gray-400 text-xs truncate">Completed</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Streak Stat */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/20">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+                  <Flame className="w-4 h-4 text-orange-400" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-white font-medium text-sm">0</div>
+                  <div className="text-gray-400 text-xs truncate">Streak</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Points Stat */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/20">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+                  <Award className="w-4 h-4 text-orange-400" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-white font-medium text-sm">0</div>
+                  <div className="text-gray-400 text-xs truncate">Points</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        
-        {/* Stats */}
-        <div className="flex items-center gap-2 md:gap-6 flex-shrink-0">
-          <div className="flex items-center gap-1 md:gap-2">
-            <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
-              <Trophy className="w-3 h-3 md:w-4 md:h-4 text-orange-400" />
+
+        {/* Desktop: Single-row layout */}
+        <div className="hidden md:flex items-center justify-between px-8 py-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
+              <Trophy className="w-6 h-6 text-white" />
             </div>
-            <div className="hidden md:block">
-              <div className="text-gray-400 text-sm">0</div>
-              <div className="text-gray-500 text-xs">Completed</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-1 md:gap-2">
-            <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
-              <Flame className="w-3 h-3 md:w-4 md:h-4 text-orange-400" />
-            </div>
-            <div className="hidden md:block">
-              <div className="text-gray-400 text-sm">0</div>
-              <div className="text-gray-500 text-xs">Streak</div>
+            <div>
+              <h1 className="text-white text-2xl">Challenges</h1>
+              <p className="text-gray-400">Test your scripture knowledge and compete with others</p>
             </div>
           </div>
-          
-          <div className="flex items-center gap-1 md:gap-2">
-            <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
-              <Award className="w-3 h-3 md:w-4 md:h-4 text-orange-400" />
+
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10">
+              <Trophy className="w-5 h-5 text-orange-400" />
+              <div>
+                <div className="text-white font-medium">0</div>
+                <div className="text-gray-400 text-xs">Completed</div>
+              </div>
             </div>
-            <div className="hidden md:block">
-              <div className="text-gray-400 text-sm">0</div>
-              <div className="text-gray-500 text-xs">Points</div>
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10">
+              <Flame className="w-5 h-5 text-orange-400" />
+              <div>
+                <div className="text-white font-medium">0</div>
+                <div className="text-gray-400 text-xs">Streak</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10">
+              <Award className="w-5 h-5 text-orange-400" />
+              <div>
+                <div className="text-white font-medium">0</div>
+                <div className="text-gray-400 text-xs">Points</div>
+              </div>
             </div>
           </div>
         </div>

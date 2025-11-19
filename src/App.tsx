@@ -5,7 +5,6 @@ import { Sidebar } from "./components/Sidebar";
 import { HomePage } from "./pages/HomePage";
 import { ReaderPage } from "./pages/ReaderPage";
 import { PracticePage } from "./pages/PracticePage";
-import { ThemeCreatorPage } from "./pages/ThemeCreatorPage";
 import { TeamPortalPage } from "./pages/TeamPortalPage";
 import { ChallengesPage } from "./pages/ChallengesPage";
 import { UBotPage } from "./pages/UBotPage";
@@ -18,7 +17,6 @@ export type PageType =
   | "home"
   | "reader"
   | "practice"
-  | "creator"
   | "calendar"
   | "challenges"
   | "messages"
@@ -91,8 +89,6 @@ export default function App() {
         );
       case "practice":
         return <PracticePage />;
-      case "creator":
-        return <ThemeCreatorPage />;
       case "calendar":
         return <ChallengesPage />;
       case "challenges":

@@ -1,4 +1,4 @@
-import { Home, BookOpen, Brain, FileText, Calendar, Trophy, MessageSquare, User, Users } from 'lucide-react';
+import { Home, BookOpen, Brain, Calendar, MessageSquare, Users } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ImageWithFallback } from './figma/ImageWithFallback';
@@ -18,7 +18,6 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
     { icon: Home, page: 'home', label: 'Home' },
     { icon: BookOpen, page: 'reader', label: 'Reader' },
     { icon: Brain, page: 'practice', label: 'Practice' },
-    { icon: FileText, page: 'creator', label: 'Theme Creator' },
     { icon: Calendar, page: 'calendar', label: 'Challenges' },
     { icon: Users, page: 'challenges', label: 'Team Portal' },
     { icon: MessageSquare, page: 'messages', label: 'UBot' },
@@ -245,87 +244,6 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
           );
         }
         
-        // Special animated document icon for Theme Creator
-        if (item.page === 'creator') {
-          return (
-            <button
-              key={index}
-              onClick={() => {
-                console.log('Clicked:', item.page);
-                onNavigate(item.page);
-              }}
-              onMouseEnter={() => setHoveredIcon('creator')}
-              onMouseLeave={() => setHoveredIcon(null)}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
-                isActive
-                  ? 'bg-green-500/20 text-green-400'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <motion.g
-                  animate={hoveredIcon === 'creator' ? {
-                    scale: [1, 1.1, 1, 1.1, 1],
-                  } : {}}
-                  transition={{
-                    duration: 2.5,
-                    repeat: hoveredIcon === 'creator' ? Infinity : 0,
-                    repeatDelay: 2.5,
-                    ease: "easeInOut"
-                  }}
-                  style={{ originX: "12px", originY: "12px" }}
-                >
-                  {/* Document outline */}
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <path d="M14 2v6h6" />
-                  {/* Text lines - animated */}
-                  <motion.path
-                    d="M8 13h2"
-                    animate={hoveredIcon === 'creator' ? {
-                      d: [
-                        "M8 13h2",
-                        "M8 13h8",
-                        "M8 13h2",
-                      ]
-                    } : {}}
-                    transition={{
-                      duration: 1.5,
-                      repeat: hoveredIcon === 'creator' ? Infinity : 0,
-                      repeatDelay: 2,
-                      ease: "easeInOut"
-                    }}
-                  />
-                  <motion.path
-                    d="M8 17h2"
-                    animate={hoveredIcon === 'creator' ? {
-                      d: [
-                        "M8 17h2",
-                        "M8 17h8",
-                        "M8 17h2",
-                      ]
-                    } : {}}
-                    transition={{
-                      duration: 1.5,
-                      delay: 0.3,
-                      repeat: hoveredIcon === 'creator' ? Infinity : 0,
-                      repeatDelay: 2,
-                      ease: "easeInOut"
-                    }}
-                  />
-                </motion.g>
-              </svg>
-            </button>
-          );
-        }
         
         // Special animated trophy icon for Challenges
         if (item.page === 'calendar') {

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Users, Plus, Link2, RefreshCw, Target, TrendingUp, Search, Trophy, Star, Lock, Globe, Filter, Crown, Medal } from 'lucide-react';
+import { Users, Plus, Link2, RefreshCw, Target, TrendingUp, Search, Trophy, Star, Lock, Globe, Filter, Crown, Medal, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../components/ui/sheet';
 
 // Mock data for demonstration
 const MOCK_MY_TEAMS = [
@@ -47,6 +48,7 @@ export function TeamPortalPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   
   // Data states
   const [myTeams, setMyTeams] = useState(MOCK_MY_TEAMS);
@@ -71,6 +73,7 @@ export function TeamPortalPage() {
     setCurrentTab(tabId);
     setSearchQuery('');
     loadTabData(tabId);
+    setIsDrawerOpen(false); // Close drawer when tab is selected
   };
 
   const loadTabData = (tabId: TabId) => {
@@ -102,60 +105,140 @@ export function TeamPortalPage() {
   return (
     <div className="flex-1 flex flex-col min-h-full">
       {/* Header */}
-      <header className="flex items-center justify-between px-3 md:px-8 py-3 md:py-4 border-b border-white/10 gap-2 md:gap-4">
-        <div className="flex items-center gap-2 md:gap-4 min-w-0">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 md:w-8 md:h-8 bg-white/10 rounded flex items-center justify-center flex-shrink-0">
-              <Users className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-400" />
+      <header className="border-b border-white/10">
+        {/* Mobile: Two-row layout with drawer */}
+        <div className="md:hidden">
+          {/* Top Row - Title & Actions */}
+          <div className="flex items-center justify-between px-3 sm:px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+            <div className="flex items-center gap-2">
+              {/* Mobile Menu Button */}
+              <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+                <SheetTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="bg-white/5 border border-white/10 text-white hover:bg-white/10 w-10 h-10"
+                  >
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-64 bg-[#0f1729] border-white/10">
+                  <SheetHeader>
+                    <SheetTitle className="text-white">Sections</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6 space-y-2">
+                    {tabs.map((tab) => {
+                      const Icon = tab.icon;
+                      const isActive = currentTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => switchTab(tab.id)}
+                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all font-medium text-left ${
+                            isActive
+                              ? 'bg-green-500/20 text-green-400 border border-green-500/50'
+                              : 'text-gray-400 hover:text-white hover:bg-white/10 border border-transparent'
+                          }`}
+                        >
+                          <Icon className="w-5 h-5 flex-shrink-0" />
+                          <span className="flex-1">{tab.label}</span>
+                          {tab.count !== undefined && (
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${
+                              isActive ? 'bg-green-500/30' : 'bg-white/10'
+                            }`}>
+                              {tab.count}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </SheetContent>
+              </Sheet>
+
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-teal-500/20 rounded-xl flex items-center justify-center border border-blue-500/30">
+                <Users className="w-5 h-5 text-blue-400" />
+              </div>
+              <div>
+                <h1 className="text-white font-semibold">Team Portal</h1>
+                <p className="text-gray-400 text-sm">
+                  Collaborate, compete, and grow
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <h1 className="text-white text-lg md:text-2xl truncate">Team Portal</h1>
-              <p className="text-gray-400 text-xs md:text-sm hidden sm:block">Collaborate, compete, and grow together</p>
-            </div>
+
+            {/* Refresh Button */}
+            <Button 
+              variant="outline" 
+              className="bg-blue-500/20 border-blue-500/50 text-blue-400 hover:bg-blue-500/30 transition-colors px-3 h-9"
+              onClick={handleRefresh}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            </Button>
           </div>
         </div>
 
-        <Button 
-          variant="outline" 
-          className="bg-white/5 border-white/10 text-white hover:bg-white/10 text-xs md:text-sm px-2 md:px-4"
-          onClick={handleRefresh}
-          disabled={isLoading}
-        >
-          <RefreshCw className={`w-3.5 h-3.5 md:w-4 md:h-4 md:mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-          <span className="hidden md:inline">Refresh</span>
-        </Button>
-      </header>
+        {/* Desktop: Original single-row layout with tabs */}
+        <div className="hidden md:block">
+          {/* Top Row - Title & Action */}
+          <div className="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-blue-500/10 to-teal-500/10">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-teal-500/20 rounded-xl flex items-center justify-center border border-blue-500/30">
+                <Users className="w-6 h-6 text-blue-400" />
+              </div>
+              <div>
+                <h1 className="text-white font-semibold">Team Portal</h1>
+                <p className="text-gray-400">
+                  Collaborate, compete, and grow
+                </p>
+              </div>
+            </div>
 
-      {/* Tabs */}
-      <div className="px-3 md:px-8 py-3 md:py-4 border-b border-white/10 overflow-x-auto">
-        <div className="flex items-center gap-1 md:gap-2 min-w-max">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = currentTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => switchTab(tab.id)}
-                className={`flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-lg transition-all text-xs md:text-sm ${
-                  isActive
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/50'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
-                {tab.count !== undefined && (
-                  <span className={`text-xs px-1.5 md:px-2 py-0.5 rounded-full ${
-                    isActive ? 'bg-green-500/30' : 'bg-white/10'
-                  }`}>
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+            {/* Refresh Button */}
+            <Button 
+              variant="outline" 
+              className="bg-blue-500/20 border-blue-500/50 text-blue-400 hover:bg-blue-500/30 transition-colors px-4 h-10"
+              onClick={handleRefresh}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+              <span className="ml-2">Refresh</span>
+            </Button>
+          </div>
+
+          {/* Bottom Row - Tabs */}
+          <div className="px-8 py-3 bg-gradient-to-r from-blue-500/5 to-purple-500/5">
+            <div className="flex items-center gap-2">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = currentTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => switchTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all text-sm font-medium ${
+                      isActive
+                        ? 'bg-green-500/20 text-green-400 border border-green-500/50'
+                        : 'text-gray-400 hover:text-white hover:bg-white/10 border border-white/10'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    <span>{tab.label}</span>
+                    {tab.count !== undefined && (
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${
+                        isActive ? 'bg-green-500/30' : 'bg-white/10'
+                      }`}>
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
       <main className="flex-1 px-8 py-8 overflow-y-auto">
@@ -388,7 +471,7 @@ export function TeamPortalPage() {
                             <h3 className="text-white text-lg mb-1">{challenge.name}</h3>
                             <div className="flex items-center gap-3 text-sm text-gray-400">
                               <span>{challenge.participants} participants</span>
-                              <span>��</span>
+                              <span></span>
                               <span>Ends in {challenge.deadline}</span>
                             </div>
                           </div>

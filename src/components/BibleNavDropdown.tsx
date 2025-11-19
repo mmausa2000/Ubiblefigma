@@ -28,6 +28,8 @@ export function BibleNavDropdown({
   const [selectedBook, setSelectedBook] = useState(currentBook);
   const [searchQuery, setSearchQuery] = useState('');
   const [hoveredChapter, setHoveredChapter] = useState<number | null>(null);
+  const [otExpanded, setOtExpanded] = useState(true);
+  const [ntExpanded, setNtExpanded] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Update selected book when current book changes
@@ -82,32 +84,52 @@ export function BibleNavDropdown({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -10, scale: 0.95 }}
           transition={{ duration: 0.15 }}
-          className="absolute top-full left-0 mt-2 w-[800px] max-w-[90vw] bg-[#1a2942] border border-white/20 rounded-xl shadow-2xl z-50 overflow-hidden"
+          className="fixed md:absolute inset-0 md:inset-auto md:top-full md:left-0 md:mt-2 md:w-[800px] md:max-w-[90vw] bg-[#1a2942] border-0 md:border md:border-white/20 md:rounded-xl shadow-2xl z-[100] overflow-hidden flex flex-col"
         >
-          <div className="flex max-h-[70vh]">
-            {/* Left Sidebar - Books */}
-            <div className="w-64 border-r border-white/10 flex flex-col bg-[#0f1a2e]">
-              {/* Header */}
-              <div className="p-3 border-b border-white/10 bg-gradient-to-r from-teal-500/10 to-blue-500/10">
-                <div className="flex items-center gap-2 mb-2">
-                  <BookOpen className="w-4 h-4 text-teal-400" />
-                  <span className="text-white text-sm font-medium">Select Book</span>
-                </div>
-                {/* Search */}
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search..."
-                    className="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-2 py-1.5 text-white text-xs focus:outline-none focus:border-teal-500/50"
-                  />
-                </div>
-              </div>
+          {/* Unified Header */}
+          <div className="p-2 md:p-3 border-b border-white/10 bg-gradient-to-r from-teal-500/10 to-blue-500/10 flex items-center justify-between">
+            <div className="flex items-center gap-1.5 md:gap-2">
+              <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4 text-teal-400" />
+              <span className="text-white text-xs md:text-sm font-medium">Bible Navigator</span>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-7 h-7 md:w-6 md:h-6 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 transition-colors flex-shrink-0"
+            >
+              <X className="w-3.5 h-3.5 md:w-4 md:h-4" />
+            </button>
+          </div>
 
+          {/* Unified Sub-Header */}
+          <div className="p-2 md:p-3 border-b border-white/10 flex items-center gap-2 md:gap-3">
+            {/* Search box */}
+            <div className="flex-1 relative">
+              <Search className="absolute left-2 md:left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 md:w-3.5 md:h-3.5 text-gray-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search books..."
+                className="w-full bg-white/5 border border-white/10 rounded-lg pl-7 md:pl-8 pr-2 py-1.5 text-white text-[10px] md:text-xs focus:outline-none focus:border-teal-500/50"
+              />
+            </div>
+            
+            {/* Book info box */}
+            <div className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 min-h-[32px] flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-white text-[10px] md:text-xs font-medium truncate">{selectedBook}</h3>
+              </div>
+              <span className="text-gray-400 text-[10px] md:text-xs ml-2 flex-shrink-0">
+                {totalChapters} ch
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-1 h-full md:h-auto md:max-h-[70vh] w-full overflow-hidden">
+            {/* Left Sidebar - Books */}
+            <div className="w-28 md:w-64 border-r border-white/10 flex flex-col bg-[#0f1a2e]">
               {/* Books List */}
-              <div className="flex-1 overflow-y-auto p-2">
+              <div className="flex-1 overflow-y-auto p-1.5 md:p-2 pb-4 md:pb-4">
                 {searchQuery ? (
                   // Filtered results
                   <div className="space-y-0.5">
@@ -115,15 +137,15 @@ export function BibleNavDropdown({
                       <button
                         key={book}
                         onClick={() => setSelectedBook(book)}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg transition-all flex items-center justify-between text-sm ${
+                        className={`w-full text-left px-2 md:px-3 py-2.5 md:py-2 rounded-lg transition-all flex items-center justify-between text-xs md:text-base min-h-[44px] md:min-h-0 ${
                           selectedBook === book
                             ? 'bg-gradient-to-r from-teal-500/20 to-blue-500/20 text-white border border-teal-500/30'
-                            : 'text-gray-300 hover:bg-white/5'
+                            : 'text-gray-300 hover:bg-white/5 active:bg-white/10'
                         }`}
                       >
-                        <span>{book}</span>
+                        <span className="truncate">{book}</span>
                         {book === currentBook && (
-                          <Check className="w-3.5 h-3.5 text-teal-400" />
+                          <Check className="w-3 h-3 md:w-4 md:h-4 text-teal-400 flex-shrink-0" />
                         )}
                       </button>
                     ))}
@@ -132,57 +154,97 @@ export function BibleNavDropdown({
                   // Organized by Testament
                   <>
                     {/* Old Testament */}
-                    <div className="mb-4">
-                      <div className="px-2 py-1.5 text-[10px] text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-                        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
-                        <span>Old Testament</span>
-                        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
-                      </div>
-                      <div className="space-y-0.5 mt-1">
-                        {oldTestament.map((book) => (
-                          <button
-                            key={book}
-                            onClick={() => setSelectedBook(book)}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg transition-all flex items-center justify-between text-xs ${
-                              selectedBook === book
-                                ? 'bg-gradient-to-r from-teal-500/20 to-blue-500/20 text-white border border-teal-500/30'
-                                : 'text-gray-300 hover:bg-white/5'
-                            }`}
+                    <div className="mb-2 md:mb-3">
+                      <button
+                        onClick={() => setOtExpanded(!otExpanded)}
+                        className="w-full px-2 md:px-2 py-2 text-[10px] md:text-xs text-gray-400 uppercase tracking-wider flex items-center justify-between hover:bg-white/5 active:bg-white/10 rounded-lg transition-colors min-h-[44px] md:min-h-0"
+                      >
+                        <div className="flex items-center gap-1.5 flex-1">
+                          <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
+                          <span className="hidden md:inline">Old Testament</span>
+                          <span className="md:hidden">OT</span>
+                          <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
+                        </div>
+                        <ChevronDown className={`w-3.5 h-3.5 md:w-4 md:h-4 transition-transform ml-1 flex-shrink-0 ${otExpanded ? 'rotate-180' : ''}`} />
+                      </button>
+                      
+                      <AnimatePresence>
+                        {otExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
                           >
-                            <span>{book}</span>
-                            {book === currentBook && (
-                              <Check className="w-3 h-3 text-teal-400" />
-                            )}
-                          </button>
-                        ))}
-                      </div>
+                            <div className="space-y-0.5 mt-1">
+                              {oldTestament.map((book) => (
+                                <button
+                                  key={book}
+                                  onClick={() => setSelectedBook(book)}
+                                  className={`w-full text-left px-2 md:px-3 py-2.5 md:py-2 rounded-lg transition-all flex items-center justify-between text-xs md:text-base min-h-[44px] md:min-h-0 ${
+                                    selectedBook === book
+                                      ? 'bg-gradient-to-r from-teal-500/20 to-blue-500/20 text-white border border-teal-500/30'
+                                      : 'text-gray-300 hover:bg-white/5 active:bg-white/10'
+                                  }`}
+                                >
+                                  <span className="truncate">{book}</span>
+                                  {book === currentBook && (
+                                    <Check className="w-3 h-3 md:w-4 md:h-4 text-teal-400 flex-shrink-0" />
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
 
                     {/* New Testament */}
-                    <div>
-                      <div className="px-2 py-1.5 text-[10px] text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-                        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
-                        <span>New Testament</span>
-                        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
-                      </div>
-                      <div className="space-y-0.5 mt-1">
-                        {newTestament.map((book) => (
-                          <button
-                            key={book}
-                            onClick={() => setSelectedBook(book)}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg transition-all flex items-center justify-between text-xs ${
-                              selectedBook === book
-                                ? 'bg-gradient-to-r from-teal-500/20 to-blue-500/20 text-white border border-teal-500/30'
-                                : 'text-gray-300 hover:bg-white/5'
-                            }`}
+                    <div className="pb-2 md:pb-2">
+                      <button
+                        onClick={() => setNtExpanded(!ntExpanded)}
+                        className="w-full px-2 md:px-2 py-2 text-[10px] md:text-xs text-gray-400 uppercase tracking-wider flex items-center justify-between hover:bg-white/5 active:bg-white/10 rounded-lg transition-colors min-h-[44px] md:min-h-0"
+                      >
+                        <div className="flex items-center gap-1.5 flex-1">
+                          <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
+                          <span className="hidden md:inline">New Testament</span>
+                          <span className="md:hidden">NT</span>
+                          <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
+                        </div>
+                        <ChevronDown className={`w-3.5 h-3.5 md:w-4 md:h-4 transition-transform ml-1 flex-shrink-0 ${ntExpanded ? 'rotate-180' : ''}`} />
+                      </button>
+                      
+                      <AnimatePresence>
+                        {ntExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
                           >
-                            <span>{book}</span>
-                            {book === currentBook && (
-                              <Check className="w-3 h-3 text-teal-400" />
-                            )}
-                          </button>
-                        ))}
-                      </div>
+                            <div className="space-y-0.5 mt-1">
+                              {newTestament.map((book) => (
+                                <button
+                                  key={book}
+                                  onClick={() => setSelectedBook(book)}
+                                  className={`w-full text-left px-2 md:px-3 py-2.5 md:py-2 rounded-lg transition-all flex items-center justify-between text-xs md:text-base min-h-[44px] md:min-h-0 ${
+                                    selectedBook === book
+                                      ? 'bg-gradient-to-r from-teal-500/20 to-blue-500/20 text-white border border-teal-500/30'
+                                      : 'text-gray-300 hover:bg-white/5 active:bg-white/10'
+                                  }`}
+                                >
+                                  <span className="truncate">{book}</span>
+                                  {book === currentBook && (
+                                    <Check className="w-3 h-3 md:w-4 md:h-4 text-teal-400 flex-shrink-0" />
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </>
                 )}
@@ -191,27 +253,9 @@ export function BibleNavDropdown({
 
             {/* Right Side - Chapters */}
             <div className="flex-1 flex flex-col overflow-hidden">
-              {/* Chapter Header */}
-              <div className="p-3 border-b border-white/10 bg-gradient-to-r from-teal-500/10 to-blue-500/10">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-white text-sm font-medium">{selectedBook}</h3>
-                    <p className="text-gray-400 text-xs mt-0.5">
-                      {totalChapters} {totalChapters === 1 ? 'chapter' : 'chapters'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={onClose}
-                    className="w-6 h-6 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
               {/* Chapter Grid - with padding to prevent tooltip cutoff */}
               <div className="flex-1 overflow-y-auto overflow-x-hidden p-3">
-                <div className="grid grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-1.5 pt-12 pb-12">
+                <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 md:gap-1.5 pt-2 md:pt-12 pb-2 md:pb-12">
                   {Array.from({ length: totalChapters }, (_, i) => i + 1).map((chapter) => {
                     const completed = isCompleted(chapter);
                     const current = isCurrent(chapter);
@@ -227,7 +271,7 @@ export function BibleNavDropdown({
                         whileTap={{ scale: 0.95 }}
                         className={`
                           relative aspect-square rounded-lg flex items-center justify-center
-                          transition-all duration-200 text-xs
+                          transition-all duration-200 text-sm md:text-xs min-h-[44px] md:min-h-0
                           ${current 
                             ? 'bg-gradient-to-br from-teal-500 to-blue-500 text-white shadow-lg shadow-teal-500/30 font-semibold' 
                             : completed
@@ -248,7 +292,7 @@ export function BibleNavDropdown({
                               initial={{ opacity: 0, y: -5 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -5 }}
-                              className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#0f1a2e] border border-white/20 rounded-md px-2 py-1 text-[10px] text-white whitespace-nowrap shadow-xl z-[100] pointer-events-none"
+                              className="hidden md:block absolute -top-10 left-1/2 -translate-x-1/2 bg-[#0f1a2e] border border-white/20 rounded-md px-2 py-1 text-[10px] text-white whitespace-nowrap shadow-xl z-[100] pointer-events-none"
                             >
                               {selectedBook} {chapter}
                               <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#0f1a2e] border-r border-b border-white/20 rotate-45" />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Timer, CheckCircle2, XCircle, Trophy, RotateCcw, Home, Clock, Diamond, Users, Zap } from 'lucide-react';
+import { ChevronLeft, Timer, CheckCircle2, XCircle, Trophy, RotateCcw, Home, Clock, Diamond, Users, Zap, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '../components/ui/button';
 import { MultiplayerLeaderboard } from '../components/MultiplayerLeaderboard';
@@ -36,6 +36,17 @@ const mockQuestions: QuizQuestion[] = [
   },
 ];
 
+interface PlayerStats {
+  id: string;
+  name: string;
+  avatar: string;
+  color: string;
+  score: number;
+  streak: number;
+  accuracy: number;
+  questionsAnswered: number;
+}
+
 interface QuizPageProps {
   onNavigateHome: () => void;
   isMultiplayer?: boolean;
@@ -51,6 +62,15 @@ export function QuizPage({ onNavigateHome, isMultiplayer = false }: QuizPageProp
   const [answers, setAnswers] = useState<boolean[]>([]);
   const [showExitModal, setShowExitModal] = useState(false);
   const [animationsComplete, setAnimationsComplete] = useState(false);
+
+  // Multiplayer state
+  const [playerScores, setPlayerScores] = useState<PlayerStats[]>([
+    { id: '1', name: 'You', avatar: 'Y', color: 'from-purple-500 to-pink-500', score: 0, streak: 0, accuracy: 0, questionsAnswered: 0 },
+    { id: '2', name: 'Sarah', avatar: 'S', color: 'from-amber-500 to-yellow-500', score: 0, streak: 0, accuracy: 0, questionsAnswered: 0 },
+    { id: '3', name: 'Mike', avatar: 'M', color: 'from-blue-500 to-cyan-500', score: 0, streak: 0, accuracy: 0, questionsAnswered: 0 },
+    { id: '4', name: 'Emma', avatar: 'E', color: 'from-green-500 to-teal-500', score: 0, streak: 0, accuracy: 0, questionsAnswered: 0 },
+  ]);
+  const [playerAnswers, setPlayerAnswers] = useState<Record<string, { time: number; correct: boolean }>>({});
 
   // Start timer after 3 seconds on first question, immediately on subsequent questions
   useEffect(() => {
@@ -103,10 +123,79 @@ export function QuizPage({ onNavigateHome, isMultiplayer = false }: QuizPageProp
     setAnswers([...answers, isCorrect]);
     setShowResult(true);
 
+    // Update multiplayer stats for your answer
+    if (isMultiplayer) {
+      const answerTime = 30 - timeLeft;
+      setPlayerAnswers({ '1': { time: answerTime, correct: isCorrect } });
+
+      setPlayerScores(prev => prev.map(p => {
+        if (p.id === '1') {
+          const newQuestionsAnswered = p.questionsAnswered + 1;
+          const newStreak = isCorrect ? p.streak + 1 : 0;
+          const newScore = isCorrect ? p.score + (newStreak > 1 ? 2 : 1) : p.score;
+          const newAccuracy = ((p.accuracy * p.questionsAnswered + (isCorrect ? 100 : 0)) / newQuestionsAnswered);
+          
+          return {
+            ...p,
+            score: newScore,
+            streak: newStreak,
+            accuracy: newAccuracy,
+            questionsAnswered: newQuestionsAnswered
+          };
+        }
+        return p;
+      }));
+    }
+
     setTimeout(() => {
       moveToNext();
     }, 2000);
   };
+
+  // Simulate other players answering in multiplayer mode
+  useEffect(() => {
+    if (isMultiplayer && showResult && selectedAnswer !== null) {
+      const delays = [400, 800, 1200];
+      const otherPlayers = playerScores.filter(p => p.id !== '1');
+      
+      otherPlayers.forEach((player, index) => {
+        setTimeout(() => {
+          const isPlayerCorrect = Math.random() > 0.3;
+          const answerTime = (30 - timeLeft) + (index * 2) + Math.random() * 3;
+          
+          setPlayerAnswers(prev => ({
+            ...prev,
+            [player.id]: { time: answerTime, correct: isPlayerCorrect }
+          }));
+
+          setPlayerScores(prev => prev.map(p => {
+            if (p.id === player.id) {
+              const newQuestionsAnswered = p.questionsAnswered + 1;
+              const newStreak = isPlayerCorrect ? p.streak + 1 : 0;
+              const newScore = isPlayerCorrect ? p.score + (newStreak > 1 ? 2 : 1) : p.score;
+              const newAccuracy = ((p.accuracy * p.questionsAnswered + (isPlayerCorrect ? 100 : 0)) / newQuestionsAnswered);
+              
+              return {
+                ...p,
+                score: newScore,
+                streak: newStreak,
+                accuracy: newAccuracy,
+                questionsAnswered: newQuestionsAnswered
+              };
+            }
+            return p;
+          }));
+        }, delays[index]);
+      });
+    }
+  }, [isMultiplayer, showResult, selectedAnswer]);
+
+  // Reset player answers when moving to next question
+  useEffect(() => {
+    if (!showResult) {
+      setPlayerAnswers({});
+    }
+  }, [showResult]);
 
   const moveToNext = () => {
     if (currentQuestion < mockQuestions.length - 1) {
@@ -413,6 +502,95 @@ export function QuizPage({ onNavigateHome, isMultiplayer = false }: QuizPageProp
               </div>
             </motion.div>
           </AnimatePresence>
+
+          {/* Inline Real-Time Leaderboard (Multiplayer Only) */}
+          {isMultiplayer && (
+            <AnimatePresence>
+              {showResult && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="mb-4 overflow-hidden"
+                >
+                  <div className="bg-[#1a2942]/60 backdrop-blur-sm border border-white/20 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Trophy className="w-4 h-4 text-amber-400" />
+                      <h4 className="text-white text-sm">Live Standings</h4>
+                    </div>
+
+                    <div className="space-y-2">
+                      {playerScores
+                        .sort((a, b) => b.score - a.score)
+                        .map((player, index) => {
+                          const answer = playerAnswers[player.id];
+
+                          return (
+                            <motion.div
+                              key={player.id}
+                              layout
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className={`flex items-center gap-3 p-2 rounded-lg ${
+                                index === 0
+                                  ? 'bg-amber-500/10 border border-amber-500/30'
+                                  : 'bg-white/5'
+                              }`}
+                            >
+                              {/* Rank */}
+                              <div className="w-5 text-center flex-shrink-0">
+                                {index === 0 ? (
+                                  <Trophy className="w-4 h-4 text-amber-400 mx-auto" />
+                                ) : (
+                                  <span className="text-gray-400 text-xs">#{index + 1}</span>
+                                )}
+                              </div>
+
+                              {/* Avatar */}
+                              <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${player.color} flex items-center justify-center text-white text-xs flex-shrink-0`}>
+                                {player.avatar}
+                              </div>
+
+                              {/* Name & Stats */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <p className={`text-xs ${index === 0 ? 'text-amber-400' : 'text-white'}`}>
+                                    {player.name}
+                                  </p>
+                                  {player.streak > 1 && (
+                                    <div className="flex items-center gap-0.5 px-1 py-0.5 rounded bg-orange-500/20">
+                                      <Flame className="w-2.5 h-2.5 text-orange-400" />
+                                      <span className="text-[10px] text-orange-400">{player.streak}</span>
+                                    </div>
+                                  )}
+                                </div>
+                                {answer && (
+                                  <p className={`text-[10px] ${answer.correct ? 'text-green-400' : 'text-red-400'}`}>
+                                    {answer.correct ? `✓ ${answer.time.toFixed(1)}s` : '✗ Wrong'}
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Score */}
+                              <div className="text-right flex-shrink-0">
+                                <div className={`text-sm ${index === 0 ? 'text-amber-400' : 'text-white'}`}>
+                                  {player.score}
+                                </div>
+                                <div className="text-[9px] text-gray-400">
+                                  {player.questionsAnswered > 0 ? Math.round(player.accuracy) : 0}%
+                                </div>
+                              </div>
+                            </motion.div>
+                          );
+                        })}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
 
           {/* Exit Quiz Button */}
           <motion.button

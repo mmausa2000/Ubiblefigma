@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Star, CheckCircle2, Volume2, Globe, BookMarked, RotateCw, Brain, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, CheckCircle2, Volume2, Globe, BookMarked, RotateCw, Brain, ChevronDown, ChevronUp, Shuffle, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Button } from '../components/ui/button';
@@ -229,70 +229,154 @@ export function PracticePage() {
   return (
     <div className="flex-1 flex flex-col min-h-full">
       {/* Header */}
-      <header className="flex items-center justify-between px-3 md:px-8 py-3 md:py-4 border-b border-white/10 gap-2 md:gap-4">
-        <div className="flex items-center gap-2 md:gap-4 min-w-0">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 md:w-8 md:h-8 bg-white/10 rounded flex items-center justify-center flex-shrink-0">
-              <Brain className="w-3.5 h-3.5 md:w-4 md:h-4 text-purple-400" />
+      <header className="border-b border-white/10">
+        {/* Mobile: Two-row layout */}
+        <div className="md:hidden">
+          {/* Top Row - Title & Stats */}
+          <div className="flex items-center justify-between px-3 sm:px-6 py-3 bg-gradient-to-r from-blue-500/10 to-teal-500/10">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-teal-500/20 rounded-xl flex items-center justify-center border border-blue-500/30">
+                <Brain className="w-5 h-5 text-blue-400" />
+              </div>
+              <div>
+                <h1 className="text-white font-semibold">Practice</h1>
+                <p className="text-green-400 text-sm">
+                  Card {currentCardIndex + 1} of {totalCards}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <h1 className="text-white text-lg md:text-2xl truncate">U Bible Practice</h1>
-              <p className="text-green-400 text-xs md:text-sm">Card {currentCardIndex + 1} of {totalCards}</p>
+
+            {/* My Themes Button */}
+            <button
+              onClick={() => setIsThemesModalOpen(true)}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/50 text-teal-400 transition-colors"
+            >
+              <BookMarked className="w-4 h-4" />
+              <span className="text-xs font-medium">Themes</span>
+            </button>
+          </div>
+
+          {/* Bottom Row - Controls */}
+          <div className="px-3 sm:px-6 py-2.5 bg-gradient-to-r from-blue-500/5 to-teal-500/5 flex items-center gap-2 overflow-x-auto">
+            {/* Practice Mode Selector */}
+            <div className="flex-1 min-w-0">
+              <Select value={practiceMode} onValueChange={(value) => setPracticeMode(value as PracticeMode)}>
+                <SelectTrigger className="w-full h-9 bg-white/5 border-white/20 text-white hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-2 w-full">
+                    <Shuffle className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                    <span className="text-xs truncate"><SelectValue /></span>
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="verse-to-ref">Verse → Reference</SelectItem>
+                  <SelectItem value="ref-to-verse">Reference → Verse</SelectItem>
+                  <SelectItem value="both">Both Modes</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Theme Selector */}
+            <div className="flex-1 min-w-0">
+              <Select value={selectedTheme} onValueChange={setSelectedTheme}>
+                <SelectTrigger className="w-full h-9 bg-white/5 border-white/20 text-white hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-2 w-full">
+                    <Tag className="w-4 h-4 text-teal-400 flex-shrink-0" />
+                    <span className="text-xs truncate"><SelectValue /></span>
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Themes</SelectItem>
+                  {Array.from(new Set(mockCards.map(c => c.theme))).map(theme => (
+                    <SelectItem key={theme} value={theme}>{theme}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Language Toggle */}
+            <div className="flex-1 min-w-0">
+              <Select value={language} onValueChange={(value) => setLanguage(value as Language)}>
+                <SelectTrigger className="w-full h-9 bg-white/5 border-white/20 text-white hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-2 w-full">
+                    <Globe className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                    <span className="text-xs truncate"><SelectValue /></span>
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="english">English</SelectItem>
+                  <SelectItem value="swahili">Swahili</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-shrink-0">
-          {/* My Themes - Icon only on mobile */}
-          <button
-            onClick={() => setIsThemesModalOpen(true)}
-            className="flex items-center justify-center min-w-[40px] h-[40px] sm:w-auto sm:h-auto sm:gap-2 sm:px-4 sm:py-2 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/50 text-teal-400 transition-colors flex-shrink-0"
-          >
-            <BookMarked className="w-4 h-4" />
-            <span className="hidden sm:inline text-sm">My Themes</span>
-          </button>
+        {/* Desktop: Original single-row layout */}
+        <div className="hidden md:flex items-center justify-between px-8 py-4 gap-4">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-white/10 rounded flex items-center justify-center">
+                <Brain className="w-4 h-4 text-purple-400" />
+              </div>
+              <div>
+                <h1 className="text-white text-2xl">U Bible Practice</h1>
+                <p className="text-green-400 text-sm">Card {currentCardIndex + 1} of {totalCards}</p>
+              </div>
+            </div>
+          </div>
 
-          {/* Practice Mode Selector - Wider on mobile to fit text */}
-          <Select value={practiceMode} onValueChange={(value) => setPracticeMode(value as PracticeMode)}>
-            <SelectTrigger className="w-[72px] sm:w-28 md:w-32 lg:w-40 h-[40px] bg-[#1a2942] border-white/10 text-white text-xs sm:text-sm flex-shrink-0">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="verse-to-ref">V → R</SelectItem>
-              <SelectItem value="ref-to-verse">R → V</SelectItem>
-              <SelectItem value="both">Both</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-4">
+            {/* My Themes */}
+            <button
+              onClick={() => setIsThemesModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/50 text-teal-400 transition-colors"
+            >
+              <BookMarked className="w-4 h-4" />
+              <span className="text-sm">My Themes</span>
+            </button>
 
-          {/* Theme Selector - Hidden on mobile */}
-          <Select value={selectedTheme} onValueChange={setSelectedTheme}>
-            <SelectTrigger className="hidden sm:flex w-28 md:w-36 lg:w-48 h-[40px] bg-[#1a2942] border-white/10 text-white text-xs sm:text-sm flex-shrink-0">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Themes</SelectItem>
-              {Array.from(new Set(mockCards.map(c => c.theme))).map(theme => (
-                <SelectItem key={theme} value={theme}>{theme}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {/* Practice Mode Selector */}
+            <Select value={practiceMode} onValueChange={(value) => setPracticeMode(value as PracticeMode)}>
+              <SelectTrigger className="w-40 h-[40px] bg-[#1a2942] border-white/10 text-white text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="verse-to-ref">V → R</SelectItem>
+                <SelectItem value="ref-to-verse">R → V</SelectItem>
+                <SelectItem value="both">Both</SelectItem>
+              </SelectContent>
+            </Select>
 
-          {/* Language Toggle - Hidden on mobile/tablet */}
-          <Select value={language} onValueChange={(value) => setLanguage(value as Language)}>
-            <SelectTrigger className="hidden lg:flex w-36 h-[40px] bg-[#1a2942] border-white/10 text-white text-sm flex-shrink-0">
-              <Globe className="w-4 h-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="english">English</SelectItem>
-              <SelectItem value="swahili">Swahili</SelectItem>
-            </SelectContent>
-          </Select>
+            {/* Theme Selector */}
+            <Select value={selectedTheme} onValueChange={setSelectedTheme}>
+              <SelectTrigger className="w-48 h-[40px] bg-[#1a2942] border-white/10 text-white text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Themes</SelectItem>
+                {Array.from(new Set(mockCards.map(c => c.theme))).map(theme => (
+                  <SelectItem key={theme} value={theme}>{theme}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Language Toggle */}
+            <Select value={language} onValueChange={(value) => setLanguage(value as Language)}>
+              <SelectTrigger className="w-36 h-[40px] bg-[#1a2942] border-white/10 text-white text-sm">
+                <Globe className="w-4 h-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="english">English</SelectItem>
+                <SelectItem value="swahili">Swahili</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-8">
+      <main className="flex-1 flex items-center justify-center p-4 md:p-8">
         <div className="w-full max-w-3xl">
           <AnimatePresence mode="wait">
             <motion.div
@@ -316,31 +400,31 @@ export function PracticePage() {
               >
                 {/* Front Side - Complete Card */}
                 <div
-                  className="bg-[#1a2942]/60 backdrop-blur-sm border border-white/20 rounded-2xl p-12 min-h-[400px] flex flex-col items-center justify-center text-center"
+                  className="bg-[#1a2942]/60 backdrop-blur-sm border border-white/20 rounded-2xl p-6 md:p-12 min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center text-center"
                   style={{
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
                   }}
                 >
-                  <div className="space-y-6 w-full">
+                  <div className="space-y-4 md:space-y-6 w-full">
                     {/* Flip hint at top */}
-                    <div className="flex items-center justify-center gap-2 text-gray-400 mb-4">
+                    <div className="flex items-center justify-center gap-2 text-gray-400 mb-2 md:mb-4">
                       <RotateCw className="w-4 h-4" />
-                      <span className="text-sm">Flip Card (Space)</span>
+                      <span className="text-xs md:text-sm">Flip Card (Space)</span>
                     </div>
                     
                     {practiceMode === 'verse-to-ref' || practiceMode === 'both' ? (
-                      <p className="text-white text-2xl leading-relaxed whitespace-pre-line">
+                      <p className="text-white text-lg md:text-2xl leading-relaxed whitespace-pre-line">
                         {getFrontContent()}
                       </p>
                     ) : (
-                      <p className="text-blue-400 text-3xl">
+                      <p className="text-blue-400 text-2xl md:text-3xl">
                         {getFrontContent()}
                       </p>
                     )}
                     
                     {/* Card Actions - Bottom Center */}
-                    <div className="flex items-center justify-center gap-3 pt-4">
+                    <div className="flex items-center justify-center gap-3 pt-2 md:pt-4">
                       <AnimatePresence mode="wait">
                         {!isMastered && (
                           <motion.button
@@ -390,26 +474,26 @@ export function PracticePage() {
 
                 {/* Back Side - Complete Card */}
                 <div
-                  className="absolute inset-0 bg-[#1a2942]/60 backdrop-blur-sm border border-white/20 rounded-2xl p-12 min-h-[400px] flex flex-col items-center justify-center text-center"
+                  className="absolute inset-0 bg-[#1a2942]/60 backdrop-blur-sm border border-white/20 rounded-2xl p-6 md:p-12 min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center text-center"
                   style={{
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
                     transform: 'rotateY(180deg)',
                   }}
                 >
-                  <div className="space-y-6 w-full">
+                  <div className="space-y-4 md:space-y-6 w-full">
                     {/* Flip hint at top */}
-                    <div className="flex items-center justify-center gap-2 text-gray-400 mb-4">
+                    <div className="flex items-center justify-center gap-2 text-gray-400 mb-2 md:mb-4">
                       <RotateCw className="w-4 h-4" />
-                      <span className="text-sm">Flip Back</span>
+                      <span className="text-xs md:text-sm">Flip Back</span>
                     </div>
                     
                     {practiceMode === 'verse-to-ref' ? (
-                      <p className="text-blue-400 text-3xl">
+                      <p className="text-blue-400 text-2xl md:text-3xl">
                         {getBackContent()}
                       </p>
                     ) : (
-                      <p className="text-white text-2xl leading-relaxed whitespace-pre-line">
+                      <p className="text-white text-lg md:text-2xl leading-relaxed whitespace-pre-line">
                         {getBackContent()}
                       </p>
                     )}
@@ -424,12 +508,12 @@ export function PracticePage() {
                         className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
                       >
                         <Volume2 className="w-4 h-4" />
-                        <span className="text-sm">Listen</span>
+                        <span className="text-xs md:text-sm">Listen</span>
                       </button>
                     </div>
                     
                     {/* Card Actions - Bottom Center (Back side) */}
-                    <div className="flex items-center justify-center gap-3 pt-4">
+                    <div className="flex items-center justify-center gap-3 pt-2 md:pt-4">
                       <AnimatePresence mode="wait">
                         {!isMastered && (
                           <motion.button
@@ -481,7 +565,7 @@ export function PracticePage() {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="flex items-center justify-center gap-4 mt-8">
+          <div className="flex items-center justify-center gap-4 mt-6 md:mt-8">
             <Button
               onClick={prevCard}
               disabled={currentCardIndex === 0}
@@ -503,11 +587,16 @@ export function PracticePage() {
           </div>
 
           {/* Review Stats Toggle & Panel */}
-          <div className="mt-6">
+          <div className="mt-4 md:mt-6">
             {/* Toggle Button */}
             <div className="flex items-center justify-center mb-2">
               <button
-                onClick={() => setShowReviewStats(!showReviewStats)}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowReviewStats(!showReviewStats);
+                }}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all"
               >
                 <span className="text-sm">Review Stats</span>
@@ -555,7 +644,7 @@ export function PracticePage() {
           </div>
 
           {/* Progress Dots */}
-          <div className="flex items-center justify-center gap-1 mt-6">
+          <div className="flex items-center justify-center gap-1 mt-4 md:mt-6">
             {Array.from({ length: Math.min(15, totalCards) }).map((_, i) => (
               <div
                 key={i}

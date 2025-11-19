@@ -222,8 +222,7 @@ export function QuickPlayModal({ isOpen, onClose, onStartQuiz }: QuickPlayModalP
   const handleStartMultiplayerGame = () => {
     // In real app: POST /api/multiplayer/start
     console.log('Starting multiplayer game...');
-    onStartQuiz(); // Navigate to quiz page in multiplayer mode
-    onClose();
+    setMultiplayerView('playing'); // Show gameplay inside modal
   };
 
   const resetToChoice = () => {

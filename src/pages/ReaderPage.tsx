@@ -119,7 +119,7 @@ interface ReaderPageProps {
 
 export function ReaderPage({ focusMode, setFocusMode }: ReaderPageProps) {
   const [language, setLanguage] = useState<'english' | 'swahili'>('english');
-  const [version, setVersion] = useState('KJCV');
+  const [version, setVersion] = useState('KJV');
   const [currentBook, setCurrentBook] = useState('Genesis');
   const [currentChapter, setCurrentChapter] = useState(1);
   const [verses, setVerses] = useState<Verse[]>(mockVerses);
@@ -323,16 +323,16 @@ export function ReaderPage({ focusMode, setFocusMode }: ReaderPageProps) {
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="flex items-center px-3 md:px-8 py-3 md:py-4 border-b border-white/10 gap-2"
       >
-        {/* Book Navigator Dropdown */}
+        {/* Book Navigator Dropdown - Now visible on mobile */}
         <div className="relative">
           <button
             ref={navButtonRef}
             onClick={() => setChapterNavModalOpen(!chapterNavModalOpen)}
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white hover:bg-white/10 transition-colors flex items-center gap-2 text-sm whitespace-nowrap"
+            className="bg-white/5 border border-white/10 rounded-lg px-2 md:px-3 py-1.5 text-white hover:bg-white/10 transition-colors flex items-center gap-1 md:gap-2 text-xs md:text-sm whitespace-nowrap"
           >
-            <BookOpen className="w-4 h-4" />
+            <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4" />
             <span>{currentBook} {currentChapter}</span>
-            <ChevronDown className="w-4 h-4 text-gray-400" />
+            <ChevronDown className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
           </button>
           
           {/* Bible Navigator Dropdown */}
@@ -353,32 +353,17 @@ export function ReaderPage({ focusMode, setFocusMode }: ReaderPageProps) {
           />
         </div>
 
-        {/* Previous Chapter Arrow */}
-        <button
-          onClick={() => setCurrentChapter(Math.max(1, currentChapter - 1))}
-          className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </button>
-
-        {/* Next Chapter Arrow */}
-        <button
-          onClick={() => setCurrentChapter(currentChapter + 1)}
-          className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </button>
-
-        {/* Version Selector (Combined Globe + Version) - Styled like Book Nav */}
+        {/* Version Selector (Combined Globe + Language + Version) - Now visible on mobile */}
         <div className="relative">
           <button
             ref={versionButtonRef}
             onClick={() => setVersionDropdownOpen(!versionDropdownOpen)}
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white hover:bg-white/10 transition-colors flex items-center gap-2 text-sm whitespace-nowrap"
+            className="bg-white/5 border border-white/10 rounded-lg px-2 md:px-3 py-1.5 text-white hover:bg-white/10 transition-colors flex items-center gap-1 md:gap-2 text-xs md:text-sm whitespace-nowrap"
           >
-            <Globe className="w-4 h-4" />
-            <span>{language === 'english' ? 'English' : 'Swahili'} {version}</span>
-            <ChevronDown className="w-4 h-4 text-gray-400" />
+            <Globe className="w-3.5 h-3.5 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">{language === 'english' ? 'English' : 'Swahili'} {version}</span>
+            <span className="sm:hidden">{version}</span>
+            <ChevronDown className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
           </button>
           
           {/* Version Dropdown Component */}
@@ -396,22 +381,38 @@ export function ReaderPage({ focusMode, setFocusMode }: ReaderPageProps) {
           />
         </div>
 
+        {/* Previous Chapter Arrow - Hidden on mobile */}
+        <button
+          onClick={() => setCurrentChapter(Math.max(1, currentChapter - 1))}
+          className="hidden md:flex w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 items-center justify-center text-gray-400 hover:text-white transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+
+        {/* Next Chapter Arrow - Hidden on mobile */}
+        <button
+          onClick={() => setCurrentChapter(currentChapter + 1)}
+          className="hidden md:flex w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 items-center justify-center text-gray-400 hover:text-white transition-colors"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+
         {/* Spacer to push right controls to the end */}
         <div className="flex-1" />
 
-        {/* Collaborative Reading Icon */}
+        {/* Collaborative Reading Icon - Hidden on mobile */}
         <button
           onClick={() => setCollaborativeReadingOpen(true)}
-          className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+          className="hidden md:flex w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 items-center justify-center text-gray-400 hover:text-white transition-colors"
           title="Read Together"
         >
           <Users className="w-4 h-4" />
         </button>
 
-        {/* Focus Mode Icon */}
+        {/* Focus Mode Icon - Hidden on mobile */}
         <button
           onClick={() => setFocusMode(!focusMode)}
-          className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+          className="hidden md:flex w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 items-center justify-center text-gray-400 hover:text-white transition-colors"
           title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
         >
           <Maximize2 className="w-4 h-4" />
@@ -434,10 +435,10 @@ export function ReaderPage({ focusMode, setFocusMode }: ReaderPageProps) {
               initial={{ x: -400, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -400, opacity: 0 }}
-              className="w-96 bg-[#0f1a2e] border-r border-white/10 flex flex-col overflow-hidden"
+              className="fixed md:relative inset-0 md:inset-auto z-50 md:z-auto md:w-96 bg-[#0f1a2e] border-r border-white/10 flex flex-col overflow-hidden"
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-white/10">
+              <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10">
                 <h2 className="text-white">Understudy Notes</h2>
                 <button
                   onClick={() => {
@@ -831,49 +832,66 @@ export function ReaderPage({ focusMode, setFocusMode }: ReaderPageProps) {
               initial={{ x: 400, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 400, opacity: 0 }}
-              className="w-96 bg-[#0f1a2e] border-l border-white/10 flex flex-col"
+              className="fixed md:relative inset-0 md:inset-auto md:w-80 lg:w-96 bg-[#0f1a2e] border-0 md:border-l border-white/10 flex flex-col z-50 md:z-auto"
             >
+              {/* Mobile Header with Close Button */}
+              <div className="md:hidden flex items-center justify-between px-4 py-3.5 border-b border-white/10 bg-gradient-to-br from-blue-600/20 via-teal-600/15 to-blue-500/20 backdrop-blur-sm">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center">
+                    <Menu className="w-4 h-4 text-white" />
+                  </div>
+                  <h2 className="text-white font-semibold tracking-wide">Bible Tools</h2>
+                </div>
+                <button
+                  onClick={() => setToolsSidebarOpen(false)}
+                  className="w-9 h-9 rounded-lg flex items-center justify-center text-white bg-white/10 hover:bg-white/20 active:bg-white/25 transition-all active:scale-95"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
               {/* Tabs */}
               <div className="border-b border-white/10 flex">
                 {[
-                  { id: 'saved', label: 'Saved Verses' },
-                  { id: 'themes', label: 'Theme Builder' },
-                  { id: 'search', label: 'Search' },
+                  { id: 'saved', label: 'Saved Verses', shortLabel: 'Saved' },
+                  { id: 'themes', label: 'Theme Builder', shortLabel: 'Themes' },
+                  { id: 'search', label: 'Search', shortLabel: 'Search' },
                 ].map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setToolsTab(tab.id as typeof toolsTab)}
-                    className={`flex-1 px-4 py-3 text-sm transition-colors ${
+                    className={`flex-1 px-2 md:px-4 py-2.5 md:py-3 text-xs md:text-sm transition-colors min-h-[44px] md:min-h-0 ${
                       toolsTab === tab.id
                         ? 'text-white border-b-2 border-blue-500 bg-white/5'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                        : 'text-gray-400 hover:text-white hover:bg-white/5 active:bg-white/10'
                     }`}
                   >
-                    {tab.label}
+                    <span className="hidden sm:inline">{tab.label}</span>
+                    <span className="sm:hidden">{tab.shortLabel}</span>
                   </button>
                 ))}
               </div>
 
               {/* Tab Content */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto p-3 md:p-6">
                 {toolsTab === 'saved' && (
-                  <div className="space-y-3">
-                    <h3 className="text-white mb-4">Your Saved Verses</h3>
+                  <div className="space-y-2 md:space-y-3">
+                    <h3 className="text-white text-sm md:text-base mb-3 md:mb-4">Your Saved Verses</h3>
                     {verses.filter(v => v.highlights || v.note || v.bookmarked).length === 0 ? (
-                      <p className="text-gray-400 text-sm">No saved verses yet</p>
+                      <p className="text-gray-400 text-xs md:text-sm">No saved verses yet</p>
                     ) : (
                       verses.filter(v => v.highlights || v.note || v.bookmarked).map((verse) => (
                         <div
                           key={verse.number}
-                          className={`border border-white/10 rounded-lg p-3 hover:bg-white/10 transition-colors cursor-pointer ${getHighlightClass(verse.highlights)}`}
+                          className={`border border-white/10 rounded-lg p-3 md:p-3 hover:bg-white/10 active:bg-white/10 transition-colors cursor-pointer min-h-[44px] ${getHighlightClass(verse.highlights)}`}
                           onClick={() => setSelectedVerse(verse.number)}
                         >
-                          <p className="text-blue-400 text-sm mb-2">
+                          <p className="text-blue-400 text-xs md:text-sm mb-2">
                             {currentBook} {currentChapter}:{verse.number}
                           </p>
-                          <p className="text-gray-300 text-sm">{verse.text}</p>
+                          <p className="text-gray-300 text-xs md:text-sm leading-relaxed">{verse.text}</p>
                           {verse.note && (
-                            <p className="text-blue-300 text-sm italic mt-2 pt-2 border-t border-white/10">
+                            <p className="text-blue-300 text-xs md:text-sm italic mt-2 pt-2 border-t border-white/10">
                               Note: {verse.note}
                             </p>
                           )}
@@ -885,15 +903,15 @@ export function ReaderPage({ focusMode, setFocusMode }: ReaderPageProps) {
 
                 {toolsTab === 'themes' && (
                   <div>
-                    <h3 className="text-white mb-4">Theme Builder</h3>
-                    <p className="text-gray-400 text-sm mb-4">
+                    <h3 className="text-white text-sm md:text-base mb-3 md:mb-4">Theme Builder</h3>
+                    <p className="text-gray-400 text-xs md:text-sm mb-3 md:mb-4 leading-relaxed">
                       Hover over verses and click + to add them to your theme
                     </p>
-                    <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-center">
-                      <p className="text-gray-400 text-sm">
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-3 md:p-4 text-center">
+                      <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
                         0 verses added to current theme
                       </p>
-                      <button className="mt-3 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors text-sm">
+                      <button className="mt-3 px-4 py-2.5 md:py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 active:bg-blue-500/30 transition-colors text-xs md:text-sm min-h-[44px] md:min-h-0">
                         Save Theme
                       </button>
                     </div>
@@ -902,17 +920,17 @@ export function ReaderPage({ focusMode, setFocusMode }: ReaderPageProps) {
 
                 {toolsTab === 'search' && (
                   <div>
-                    <h3 className="text-white mb-4">Search</h3>
-                    <div className="space-y-4">
+                    <h3 className="text-white text-sm md:text-base mb-3 md:mb-4">Search</h3>
+                    <div className="space-y-3 md:space-y-4">
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
                         <input
                           type="text"
                           placeholder="Search verses..."
-                          className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-3 py-2 text-white focus:outline-none focus:border-blue-500/50"
+                          className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 md:pl-10 pr-3 py-2.5 md:py-2 text-white text-xs md:text-sm focus:outline-none focus:border-blue-500/50 min-h-[44px] md:min-h-0"
                         />
                       </div>
-                      <select className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500/50">
+                      <select className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 md:py-2 text-white text-xs md:text-sm focus:outline-none focus:border-blue-500/50 min-h-[44px] md:min-h-0">
                         <option>All Testaments</option>
                         <option>Old Testament</option>
                         <option>New Testament</option>
